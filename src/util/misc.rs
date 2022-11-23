@@ -30,6 +30,7 @@ mod message_signing {
     use crate::hashes::sha256d;
     use secp256k1;
     use secp256k1::ecdsa::{RecoveryId, RecoverableSignature};
+    use crate::Blockchain;
 
     use crate::util::key::PublicKey;
     use crate::util::address::{Address, AddressType};
@@ -156,12 +157,13 @@ mod message_signing {
             &self,
             secp_ctx: &secp256k1::Secp256k1<C>,
             address: &Address,
-            msg_hash: sha256d::Hash
+            msg_hash: sha256d::Hash,
+            chain: Blockchain,
         ) -> Result<bool, MessageSignatureError> {
             match address.address_type() {
                 Some(AddressType::P2pkh) => {
                     let pubkey = self.recover_pubkey(secp_ctx, msg_hash)?;
-                    Ok(*address == Address::p2pkh(&pubkey, address.network))
+                    Ok(*address == Address::p2pkh(&pubkey, address.network, chain))
                 }
                 Some(address_type) => Err(MessageSignatureError::UnsupportedAddressType(address_type)),
                 None => Ok(false),
@@ -313,7 +315,7 @@ mod tests {
     fn test_message_signature() {
         use core::str::FromStr;
         use secp256k1;
-        use crate::{Address, Network, AddressType};
+        use crate::{Address, Network, AddressType, Blockchain};
 
         let secp = secp256k1::Secp256k1::new();
         let message = "rust-bitcoin MessageSignature test";
@@ -334,16 +336,16 @@ mod tests {
         assert!(pubkey.compressed);
         assert_eq!(pubkey.inner, secp256k1::PublicKey::from_secret_key(&secp, &privkey));
 
-        let p2pkh = Address::p2pkh(&pubkey, Network::Bitcoin);
-        assert_eq!(signature2.is_signed_by_address(&secp, &p2pkh, msg_hash), Ok(true));
-        let p2wpkh = Address::p2wpkh(&pubkey, Network::Bitcoin).unwrap();
+        let p2pkh = Address::p2pkh(&pubkey, Network::Bitcoin, Blockchain::Bitcoin);
+        assert_eq!(signature2.is_signed_by_address(&secp, &p2pkh, msg_hash, Blockchain::Bitcoin), Ok(true));
+        let p2wpkh = Address::p2wpkh(&pubkey, Network::Bitcoin, Blockchain::Bitcoin).unwrap();
         assert_eq!(
-            signature2.is_signed_by_address(&secp, &p2wpkh, msg_hash),
+            signature2.is_signed_by_address(&secp, &p2wpkh, msg_hash, Blockchain::Bitcoin),
             Err(MessageSignatureError::UnsupportedAddressType(AddressType::P2wpkh))
         );
-        let p2shwpkh = Address::p2shwpkh(&pubkey, Network::Bitcoin).unwrap();
+        let p2shwpkh = Address::p2shwpkh(&pubkey, Network::Bitcoin, Blockchain::Bitcoin).unwrap();
         assert_eq!(
-            signature2.is_signed_by_address(&secp, &p2shwpkh, msg_hash),
+            signature2.is_signed_by_address(&secp, &p2shwpkh, msg_hash, Blockchain::Bitcoin),
             Err(MessageSignatureError::UnsupportedAddressType(AddressType::P2sh))
         );
     }
@@ -353,7 +355,7 @@ mod tests {
     fn test_incorrect_message_signature() {
         use secp256k1;
         use crate::util::key::PublicKey;
-        use crate::{Address, Network};
+        use crate::{Address, Network, Blockchain};
 
         let secp = secp256k1::Secp256k1::new();
         let message = "a different message from what was signed";
@@ -369,7 +371,7 @@ mod tests {
             &::base64::decode(&pubkey_base64).expect("base64 string")
         ).expect("pubkey slice");
 
-        let p2pkh = Address::p2pkh(&pubkey, Network::Bitcoin);
-        assert_eq!(signature.is_signed_by_address(&secp, &p2pkh, msg_hash), Ok(false));
+        let p2pkh = Address::p2pkh(&pubkey, Network::Bitcoin, Blockchain::Bitcoin);
+        assert_eq!(signature.is_signed_by_address(&secp, &p2pkh, msg_hash, Blockchain::Bitcoin), Ok(false));
     }
 }

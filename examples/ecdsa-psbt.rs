@@ -43,7 +43,7 @@ use bitcoin::util::bip32::{
 };
 use bitcoin::util::psbt::{self, Input, Psbt, PsbtSighashType};
 use bitcoin::{
-    Address, Amount, Network, OutPoint, PackedLockTime, PrivateKey, PublicKey, Script, Sequence,
+    Address, Amount, Blockchain, Network, OutPoint, PackedLockTime, PrivateKey, PublicKey, Script, Sequence,
     Transaction, TxIn, TxOut, Txid, Witness,
 };
 
@@ -293,7 +293,7 @@ impl WatchOnly {
         let derived = self.account_0_xpub.derive_pub(secp, &path)?;
 
         let pk = derived.to_pub();
-        let addr = Address::p2wpkh(&pk, NETWORK)?;
+        let addr = Address::p2wpkh(&pk, NETWORK, Blockchain::Bitcoin)?;
         let path = path.into_derivation_path()?;
 
         Ok((pk, addr, path))

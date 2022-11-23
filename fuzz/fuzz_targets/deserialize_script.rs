@@ -2,6 +2,7 @@ extern crate bitcoin;
 
 use bitcoin::util::address::Address;
 use bitcoin::network::constants::Network;
+use bitcoin::Blockchain;
 use bitcoin::blockdata::script;
 use bitcoin::consensus::encode;
 
@@ -37,7 +38,7 @@ fn do_test(data: &[u8]) {
         assert_eq!(data, &encode::serialize(&script)[..]);
 
         // Check if valid address and if that address roundtrips.
-        if let Ok(addr) = Address::from_script(&script, Network::Bitcoin) {
+        if let Ok(addr) = Address::from_script(&script, Network::Bitcoin, Blockchain::Bitcoin) {
             assert_eq!(addr.script_pubkey(), script);
         }
     }

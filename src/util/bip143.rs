@@ -179,6 +179,7 @@ impl<R: DerefMut<Target = Transaction>> SigHashCache<R> {
 #[allow(deprecated)]
 mod tests {
     use std::str::FromStr;
+    use crate::Blockchain;
     use crate::hash_types::Sighash;
     use crate::blockdata::script::Script;
     use crate::blockdata::transaction::Transaction;
@@ -194,7 +195,7 @@ mod tests {
 
     fn p2pkh_hex(pk: &str) -> Script {
         let pk: PublicKey = PublicKey::from_str(pk).unwrap();
-        Address::p2pkh(&pk, Network::Bitcoin).script_pubkey()
+        Address::p2pkh(&pk, Network::Bitcoin, Blockchain::Bitcoin).script_pubkey()
     }
 
     fn run_test_sighash_bip143(tx: &str, script: &str, input_index: usize, value: u64, hash_type: u32, expected_result: &str) {

@@ -41,13 +41,29 @@ pub const WITNESS_SCALE_FACTOR: usize = 4;
 /// The maximum allowed number of signature check operations in a block
 pub const MAX_BLOCK_SIGOPS_COST: i64 = 80_000;
 /// Mainnet (bitcoin) pubkey address prefix.
-pub const PUBKEY_ADDRESS_PREFIX_MAIN: u8 = 0; // 0x00
+pub const BITCOIN_PUBKEY_ADDRESS_PREFIX_MAIN: u8 = 0; // 0x00
 /// Mainnet (bitcoin) script address prefix.
-pub const SCRIPT_ADDRESS_PREFIX_MAIN: u8 = 5; // 0x05
+pub const BITCOIN_SCRIPT_ADDRESS_PREFIX_MAIN: u8 = 5; // 0x05
 /// Test (tesnet, signet, regtest) pubkey address prefix.
-pub const PUBKEY_ADDRESS_PREFIX_TEST: u8 = 111; // 0x6f
+pub const BITCOIN_PUBKEY_ADDRESS_PREFIX_TEST: u8 = 111; // 0x6f
 /// Test (tesnet, signet, regtest) script address prefix.
-pub const SCRIPT_ADDRESS_PREFIX_TEST: u8 = 196; // 0xc4
+pub const BITCOIN_SCRIPT_ADDRESS_PREFIX_TEST: u8 = 196; // 0xc4
+/// Mainnet (dogecoin) pubkey address prefix.
+pub const DOGECOIN_PUBKEY_ADDRESS_PREFIX_MAIN: u8 = 30;
+/// Mainnet (dogecoin) script address prefix.
+pub const DOGECOIN_SCRIPT_ADDRESS_PREFIX_MAIN: u8 = 22;
+/// Test (tesnet, signet, regtest) pubkey address prefix.
+pub const DOGECOIN_PUBKEY_ADDRESS_PREFIX_TEST: u8 = 113;
+/// Test (tesnet, signet, regtest) script address prefix.
+pub const DOGECOIN_SCRIPT_ADDRESS_PREFIX_TEST: u8 = 196;
+/// Mainnet (litecoin) pubkey address prefix.
+pub const LITECOIN_PUBKEY_ADDRESS_PREFIX_MAIN: u8 = 48;
+/// Mainnet (litecoin) script address prefix.
+pub const LITECOIN_SCRIPT_ADDRESS_PREFIX_MAIN: u8 = 50;
+/// Test (tesnet, signet, regtest) pubkey address prefix.
+pub const LITECOIN_PUBKEY_ADDRESS_PREFIX_TEST: u8 = 111;
+/// Test (tesnet, signet, regtest) script address prefix.
+pub const LITECOIN_SCRIPT_ADDRESS_PREFIX_TEST: u8 = 58;
 /// The maximum allowed script size.
 pub const MAX_SCRIPT_ELEMENT_SIZE: usize = 520;
 /// How may blocks between halvings.
