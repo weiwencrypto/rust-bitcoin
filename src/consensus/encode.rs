@@ -144,14 +144,23 @@ pub fn serialize_hex<T: Encodable + ?Sized>(data: &T) -> String {
 /// Deserialize an object from a vector, will error if said deserialization
 /// doesn't consume the entire vector.
 pub fn deserialize<T: Decodable>(data: &[u8]) -> Result<T, Error> {
-    let (rv, consumed) = deserialize_partial(data)?;
+    let (rv, _consumed) = deserialize_partial(data)?;
 
-    // Fail if data are not consumed entirely.
-    if consumed == data.len() {
-        Ok(rv)
-    } else {
-        Err(Error::ParseFailed("data not consumed entirely when explicitly deserializing"))
-    }
+    // Alt-coins (dogecoin, namecoin) add an additional field to the blockheader
+    // called `auxpow` that is a pointer to arbitrary data used for making
+    // commitments during merge mining. Just ignore the usual length check here
+    // so as not to fail deserialization when auxpow data exists.
+
+    Ok(rv)
+
+    // // Fail if data are not consumed entirely.
+    // if consumed == data.len() {
+    //     Ok(rv)
+    // } else {
+    //     Err(Error::ParseFailed(
+    //         "data not consumed entirely when explicitly deserializing",
+    //     ))
+    // }
 }
 
 /// Deserialize an object from a vector, but will not report an error if said deserialization
@@ -993,11 +1002,11 @@ mod tests {
     #[test]
     fn deserialize_int_test() {
         // bool
-        assert!((deserialize(&[58u8, 0]) as Result<bool, _>).is_err());
+        // assert!((deserialize(&[58u8, 0]) as Result<bool, _>).is_err());
         assert_eq!(deserialize(&[58u8]).ok(), Some(true));
         assert_eq!(deserialize(&[1u8]).ok(), Some(true));
         assert_eq!(deserialize(&[0u8]).ok(), Some(false));
-        assert!((deserialize(&[0u8, 1]) as Result<bool, _>).is_err());
+        // assert!((deserialize(&[0u8, 1]) as Result<bool, _>).is_err());
 
         // u8
         assert_eq!(deserialize(&[58u8]).ok(), Some(58u8));
@@ -1035,7 +1044,7 @@ mod tests {
     #[test]
     fn deserialize_vec_test() {
         assert_eq!(deserialize(&[3u8, 2, 3, 4]).ok(), Some(vec![2u8, 3, 4]));
-        assert!((deserialize(&[4u8, 2, 3, 4, 5, 6]) as Result<Vec<u8>, _>).is_err());
+        // assert!((deserialize(&[4u8, 2, 3, 4, 5, 6]) as Result<Vec<u8>, _>).is_err());
         // found by cargo fuzz
         assert!(deserialize::<Vec<u64>>(&[0xff,0xff,0xff,0xff,0x6b,0x6b,0x6b,0x6b,0x6b,0x6b,0x6b,0x6b,0x6b,0x6b,0x6b,0x6b,0xa,0xa,0x3a]).is_err());
 
